@@ -17,11 +17,14 @@ Run with `uv run wp-media-upload.py <command>`. Requires `.env` with WordPress c
 # Upload image and get media ID
 uv run wp-media-upload.py upload --image ./image.jpg --title "Image Title"
 
-# Create post with featured image
-uv run wp-media-upload.py create-post --title "Post Title" --file ./content.html --status publish --featured-media 1234
+# Create post with featured image and save metadata
+uv run wp-media-upload.py create-post --title "Post Title" --file ./content.html --status publish --featured-media 1234 --save-meta ./posts/2026-01-13-my-post/
 
 # Set featured image on existing post
 uv run wp-media-upload.py set-featured --post-id 1234 --media-id 5678
+
+# Fetch metadata for existing post
+uv run wp-media-upload.py fetch-meta --post-id 1234 --output ./posts/2026-01-13-my-post/
 ```
 
 **Required Environment Variables (.env):**
@@ -31,9 +34,43 @@ uv run wp-media-upload.py set-featured --post-id 1234 --media-id 5678
 
 ### Content Format
 
-Blog posts are stored in `wordpress-posts/`:
-- `.md` files: Source markdown drafts
-- `-blocks.html` files: Gutenberg block format for WordPress publishing
+Blog posts are stored in `posts/YYYY-MM-DD-post-slug/` folders:
+- `content.md` - Source markdown draft
+- `featured.jpg` - Optimized featured image for WordPress
+- `*.png` - Original generated images (high-res)
+- `*-blocks.html` - Gutenberg block format for WordPress publishing
+- `meta.json` - WordPress metadata (post ID, slug, dates, SEO fields)
+
+Folder naming uses ISO date prefix for chronological sorting.
+
+### Metadata Schema (meta.json)
+
+```json
+{
+  "wordpress": {
+    "post_id": 1234,
+    "slug": "post-slug",
+    "status": "publish",
+    "link": "https://...",
+    "featured_media_id": 5678,
+    "author_id": 1,
+    "categories": [1],
+    "tags": []
+  },
+  "content": {
+    "title": "Post Title",
+    "excerpt": "..."
+  },
+  "dates": {
+    "created": "2026-01-13T12:00:00",
+    "modified": "2026-01-13T12:00:00"
+  },
+  "seo": {
+    "meta_title": "",
+    "meta_description": ""
+  }
+}
+```
 
 Post content must be converted to Gutenberg blocks before publishing. Key block types:
 - `<!-- wp:paragraph -->` for text

@@ -83,12 +83,16 @@ GEMINI_API_KEY=your-gemini-key  # Optional, for image generation
 # Upload an image
 uv run wp-media-upload.py upload --image ./hero.jpg --title "Post Hero Image"
 
-# Create and publish a post with featured image
+# Create and publish a post with featured image (saves metadata)
 uv run wp-media-upload.py create-post \
   --title "My Blog Post" \
   --file ./post-content.html \
   --status publish \
-  --featured-media 1234
+  --featured-media 1234 \
+  --save-meta ./posts/2026-01-13-my-post/
+
+# Fetch metadata for existing post
+uv run wp-media-upload.py fetch-meta --post-id 1234 --output ./posts/2026-01-13-my-post/
 
 # Crop image to 16:9 aspect ratio
 uv run image-crop.py hero.png --aspect 16:9 --output hero.jpg
@@ -109,15 +113,21 @@ Claude: [Generates image] → [Crops to 16:9] → [Converts to JPG] →
 ## Project Structure
 
 ```
-├── wordpress-posts/          # Blog post drafts
-│   ├── *.md                  # Markdown source files
-│   └── *-blocks.html         # Gutenberg block format (generated)
-├── wp-media-upload.py        # WordPress publishing CLI
-├── image-crop.py             # Image processing CLI
-├── *.png / *.jpg             # Generated hero images
-├── .env                      # Credentials (not committed)
-└── CLAUDE.md                 # Claude Code context file
+├── posts/                              # Blog posts organized by date
+│   ├── YYYY-MM-DD-post-slug/           # Each post in its own folder
+│   │   ├── content.md                  # Markdown source
+│   │   ├── featured.jpg                # Featured image (optimized)
+│   │   ├── *.png                       # Original generated images
+│   │   ├── *-blocks.html               # Gutenberg blocks (generated)
+│   │   └── meta.json                   # WordPress metadata (post ID, SEO, etc.)
+│   └── ...
+├── wp-media-upload.py                  # WordPress publishing CLI
+├── image-crop.py                       # Image processing CLI
+├── .env                                # Credentials (not committed)
+└── CLAUDE.md                           # Claude Code context file
 ```
+
+Post folders are named `YYYY-MM-DD-slug` for chronological sorting. The `meta.json` file stores WordPress post ID, slug, dates, and SEO metadata for future edits.
 
 ## Why This Approach?
 

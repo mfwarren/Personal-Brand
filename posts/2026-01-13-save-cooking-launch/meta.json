@@ -1,0 +1,31 @@
+{
+  "wordpress": {
+    "post_id": 9828,
+    "slug": "how-a-holiday-tech-support-call-turned-into-a-full-stack-ai-project",
+    "status": "publish",
+    "link": "https://www.mattwarren.co/2026/01/how-a-holiday-tech-support-call-turned-into-a-full-stack-ai-project/",
+    "featured_media_id": 9827,
+    "author_id": 1,
+    "categories": [
+      1
+    ],
+    "tags": []
+  },
+  "content": {
+    "title": "How a Holiday Tech Support Call Turned Into a Full-Stack AI Project",
+    "excerpt": "<p>Like many eldest sons, I have a standing role as family tech support. This holiday season, that role led me somewhere unexpected: launching a new product. The Call I was visiting my parents over the holidays when they asked for help with a recipe app called MasterCook. They&#8217;d been using it for years, but the [&hellip;]</p>"
+  },
+  "dates": {
+    "created": "2026-01-13T21:56:20",
+    "modified": "2026-01-13T21:56:20",
+    "created_gmt": "2026-01-13T21:56:20",
+    "modified_gmt": "2026-01-13T21:56:20"
+  },
+  "seo": {
+    "meta_title": "",
+    "meta_description": "",
+    "og_title": "",
+    "og_description": ""
+  },
+  "meta_updated": "2026-01-13T22:30:23.604808Z"
+}

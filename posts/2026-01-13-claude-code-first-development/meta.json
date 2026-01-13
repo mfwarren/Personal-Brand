@@ -1,0 +1,31 @@
+{
+  "wordpress": {
+    "post_id": 9825,
+    "slug": "claude-code-first-development-building-ai-operable-systems",
+    "status": "publish",
+    "link": "https://www.mattwarren.co/2026/01/claude-code-first-development-building-ai-operable-systems/",
+    "featured_media_id": 9824,
+    "author_id": 1,
+    "categories": [
+      1
+    ],
+    "tags": []
+  },
+  "content": {
+    "title": "Claude Code First Development: Building AI-Operable Systems",
+    "excerpt": "<p>Most developers think about AI coding assistants as tools that help you write code faster. But there&#8217;s a more interesting question: how do you architect your systems so an AI can operate them? I&#8217;ve been running production applications for years. The traditional approach is to build admin dashboards &#8211; React UIs, Django admin, custom internal [&hellip;]</p>"
+  },
+  "dates": {
+    "created": "2026-01-13T21:37:15",
+    "modified": "2026-01-13T21:37:16",
+    "created_gmt": "2026-01-13T21:37:15",
+    "modified_gmt": "2026-01-13T21:37:16"
+  },
+  "seo": {
+    "meta_title": "",
+    "meta_description": "",
+    "og_title": "",
+    "og_description": ""
+  },
+  "meta_updated": "2026-01-13T22:30:17.972064Z"
+}

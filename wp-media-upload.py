@@ -7,23 +7,33 @@
 # ]
 # ///
 """
-WordPress Media Upload CLI
+WordPress CLI Tools
 
-Upload images to WordPress and get the media ID for use as featured images.
+Manage WordPress posts, media, and metadata from the command line.
+
+Commands:
+    upload        - Upload media to WordPress
+    create-post   - Create a new post with optional featured image
+    set-featured  - Set featured image on existing post
+    fetch-meta    - Fetch metadata for an existing post
 
 Usage:
-    uv run wp-media-upload.py --image /path/to/image.png --title "Image Title"
+    uv run wp-media-upload.py upload --image /path/to/image.png --title "Image Title"
+    uv run wp-media-upload.py create-post --title "Post Title" --file content.html --status publish
+    uv run wp-media-upload.py fetch-meta --post-id 1234 --output ./posts/2026-01-13-my-post/
 
 Environment variables (can be set in .env):
-    WP_SITE_URL - WordPress site URL (e.g., https://mattwarren.co)
+    WP_SITE_URL - WordPress site URL (e.g., https://www.mattwarren.co)
     WP_USERNAME - WordPress username
-    WP_APP_PASSWORD - WordPress application password (generate in Users > Profile > Application Passwords)
+    WP_APP_PASSWORD - WordPress application password
 """
 
 import argparse
 import base64
+import json
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import requests
@@ -150,7 +160,16 @@ def create_post(site_url: str, username: str, app_password: str, title: str, con
             'title': data['title']['rendered'],
             'status': data['status'],
             'link': data['link'],
+            'slug': data['slug'],
             'featured_media': data.get('featured_media', 0),
+            'date': data['date'],
+            'date_gmt': data['date_gmt'],
+            'modified': data['modified'],
+            'modified_gmt': data['modified_gmt'],
+            'excerpt': data['excerpt']['rendered'].strip(),
+            'author': data.get('author'),
+            'categories': data.get('categories', []),
+            'tags': data.get('tags', []),
         }
     else:
         try:
@@ -194,6 +213,75 @@ def set_featured_image(site_url: str, username: str, app_password: str, post_id:
         except:
             msg = response.text[:500]
         raise Exception(f"Failed to set featured image ({response.status_code}): {msg}")
+
+
+def fetch_post_metadata(site_url: str, username: str, app_password: str, post_id: int) -> dict:
+    """Fetch full metadata for a WordPress post."""
+
+    credentials = f"{username}:{app_password}"
+    token = base64.b64encode(credentials.encode()).decode()
+    headers = {
+        'Authorization': f'Basic {token}',
+    }
+
+    api_url = f"{site_url.rstrip('/')}/wp-json/wp/v2/posts/{post_id}"
+
+    response = requests.get(
+        api_url,
+        headers=headers,
+        timeout=30,
+    )
+
+    if response.status_code != 200:
+        try:
+            err = response.json()
+            msg = err.get('message', response.text[:500])
+        except:
+            msg = response.text[:500]
+        raise Exception(f"Failed to fetch post ({response.status_code}): {msg}")
+
+    data = response.json()
+
+    # Extract and structure the metadata
+    metadata = {
+        'wordpress': {
+            'post_id': data['id'],
+            'slug': data['slug'],
+            'status': data['status'],
+            'link': data['link'],
+            'featured_media_id': data.get('featured_media', 0),
+            'author_id': data.get('author'),
+            'categories': data.get('categories', []),
+            'tags': data.get('tags', []),
+        },
+        'content': {
+            'title': data['title']['rendered'],
+            'excerpt': data['excerpt']['rendered'].strip(),
+        },
+        'dates': {
+            'created': data['date'],
+            'modified': data['modified'],
+            'created_gmt': data['date_gmt'],
+            'modified_gmt': data['modified_gmt'],
+        },
+        'seo': {
+            'meta_title': data.get('meta', {}).get('_seopress_titles_title', ''),
+            'meta_description': data.get('meta', {}).get('_seopress_titles_desc', ''),
+            'og_title': '',
+            'og_description': '',
+        },
+        'meta_updated': datetime.utcnow().isoformat() + 'Z',
+    }
+
+    return metadata
+
+
+def save_post_metadata(metadata: dict, output_path: Path) -> Path:
+    """Save post metadata to a JSON file."""
+    meta_file = output_path / 'meta.json'
+    with open(meta_file, 'w') as f:
+        json.dump(metadata, f, indent=2)
+    return meta_file
 
 
 def get_credentials():
@@ -244,6 +332,12 @@ def main():
     post_parser.add_argument('--file', '-f', help='Read content from file')
     post_parser.add_argument('--status', '-s', default='draft', choices=['draft', 'publish', 'pending'], help='Post status')
     post_parser.add_argument('--featured-media', '-m', type=int, help='Featured image media ID')
+    post_parser.add_argument('--save-meta', help='Directory to save meta.json file')
+
+    # Fetch metadata command
+    fetch_parser = subparsers.add_parser('fetch-meta', help='Fetch metadata for existing post')
+    fetch_parser.add_argument('--post-id', '-p', type=int, required=True, help='WordPress post ID')
+    fetch_parser.add_argument('--output', '-o', required=True, help='Output directory for meta.json')
 
     args = parser.parse_args()
 
@@ -284,6 +378,50 @@ def main():
             print(f"  Link: {result['link']}")
             if result['featured_media']:
                 print(f"  Featured Media: {result['featured_media']}")
+
+            # Save metadata if requested
+            if args.save_meta:
+                metadata = {
+                    'wordpress': {
+                        'post_id': result['id'],
+                        'slug': result['slug'],
+                        'status': result['status'],
+                        'link': result['link'],
+                        'featured_media_id': result['featured_media'],
+                        'author_id': result['author'],
+                        'categories': result['categories'],
+                        'tags': result['tags'],
+                    },
+                    'content': {
+                        'title': result['title'],
+                        'excerpt': result['excerpt'],
+                    },
+                    'dates': {
+                        'created': result['date'],
+                        'modified': result['modified'],
+                        'created_gmt': result['date_gmt'],
+                        'modified_gmt': result['modified_gmt'],
+                    },
+                    'seo': {
+                        'meta_title': '',
+                        'meta_description': '',
+                        'og_title': '',
+                        'og_description': '',
+                    },
+                    'meta_updated': datetime.utcnow().isoformat() + 'Z',
+                }
+                meta_path = save_post_metadata(metadata, Path(args.save_meta))
+                print(f"  Metadata: {meta_path}")
+
+        elif args.command == 'fetch-meta':
+            metadata = fetch_post_metadata(site_url, username, app_password, args.post_id)
+            output_dir = Path(args.output)
+            output_dir.mkdir(parents=True, exist_ok=True)
+            meta_path = save_post_metadata(metadata, output_dir)
+            print(f"Metadata saved!")
+            print(f"  Post ID: {metadata['wordpress']['post_id']}")
+            print(f"  Title: {metadata['content']['title']}")
+            print(f"  File: {meta_path}")
 
     except FileNotFoundError as e:
         print(f"Error: {e}", file=sys.stderr)
