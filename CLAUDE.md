@@ -45,8 +45,16 @@ Post content must be converted to Gutenberg blocks before publishing. Key block 
 
 Hero images use the nano-banana-pro skill with Gemini. For 16:9 images:
 1. Generate with `--aspect landscape`
-2. Crop to exact 16:9 with PIL if needed
-3. Convert to JPG for smaller file size
+2. Crop to exact 16:9 and convert to JPG:
+
+```bash
+uv run image-crop.py hero.png --aspect 16:9 --output hero.jpg
+```
+
+**image-crop.py options:**
+- `-a, --aspect` - Target ratio (default: 16:9)
+- `-o, --output` - Output file (default: adds -WxH suffix, converts to .jpg)
+- `-q, --quality` - JPEG quality 1-100 (default: 90)
 
 ## MCP Integration
 
