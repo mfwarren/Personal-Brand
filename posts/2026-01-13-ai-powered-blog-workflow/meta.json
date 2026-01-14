@@ -1,0 +1,31 @@
+{
+  "wordpress": {
+    "post_id": 9830,
+    "slug": "how-i-use-ai-to-write-and-publish-blog-posts",
+    "status": "publish",
+    "link": "https://www.mattwarren.co/2026/01/how-i-use-ai-to-write-and-publish-blog-posts/",
+    "featured_media_id": 9829,
+    "author_id": 1,
+    "categories": [
+      1
+    ],
+    "tags": []
+  },
+  "content": {
+    "title": "How I Use AI to Write and Publish Blog Posts",
+    "excerpt": "<p>This post is a bit meta. I&#8217;m using the exact workflow I&#8217;m about to describe to write and publish this very article. Here&#8217;s the setup: I speak my ideas out loud, an AI turns them into polished prose, another AI generates the hero image, and a set of scripts I built with AI assistance handles [&hellip;]</p>"
+  },
+  "dates": {
+    "created": "2026-01-14T00:46:04",
+    "modified": "2026-01-14T00:46:04",
+    "created_gmt": "2026-01-14T00:46:04",
+    "modified_gmt": "2026-01-14T00:46:04"
+  },
+  "seo": {
+    "meta_title": "",
+    "meta_description": "",
+    "og_title": "",
+    "og_description": ""
+  },
+  "meta_updated": "2026-01-14T00:46:05.217847Z"
+}

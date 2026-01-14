@@ -1,0 +1,185 @@
+<!-- wp:paragraph -->
+<p>This post is a bit meta. I'm using the exact workflow I'm about to describe to write and publish this very article.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Here's the setup: I speak my ideas out loud, an AI turns them into polished prose, another AI generates the hero image, and a set of scripts I built with AI assistance handles the publishing. The whole thing lives in a GitHub repository that you can clone and use yourself.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Let me walk you through how it works.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">The Problem With Writing</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>I have ideas. Lots of them. The bottleneck has never been coming up with things to write about—it's the friction between having a thought and getting it published.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Traditional blogging requires you to:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list"><li>Sit down and type out your thoughts</li><li>Edit and format the content</li><li>Find or create images</li><li>Log into WordPress</li><li>Copy-paste everything into the editor</li><li>Set featured images, categories, meta descriptions</li><li>Preview, fix issues, publish</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Each step is a context switch. Each context switch is an opportunity to abandon the post entirely. My drafts folder is a graveyard of half-finished ideas.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Voice First</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The breakthrough was realizing I don't need to type. I use <a href="https://wispr.flow">Wispr Flow</a> for voice-to-text dictation. It runs locally on my Mac and transcribes speech with surprisingly good accuracy.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Now when I have an idea for a post, I just... talk. I ramble through my thoughts, explain the concept as if I'm telling a friend, and let the words flow without worrying about structure or polish.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The output is messy. It's conversational, full of "um"s and tangents. But it captures the core ideas in a way that staring at a blank page never did.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">AI as Editor</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>This is where Claude Code comes in. I take my raw dictation and ask Claude to transform it into a structured blog post. Not just grammar cleanup—actual restructuring, adding headers, tightening the prose, finding the narrative thread in my stream of consciousness.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The key is that I stay in control. Claude produces a markdown draft, and I review it. I keep what works, rewrite what doesn't, add details Claude couldn't know. The AI handles the tedious transformation from spoken word to written word. I handle the judgment calls about what's actually worth saying.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">The Publishing Pipeline</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Here's where it gets interesting. I built a set of CLI tools that Claude Code can use to handle the entire publishing workflow.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>When I'm ready to publish, I have a conversation like this:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>Me: "Generate a cyberpunk-style hero image for this post about AI blogging workflows,
+crop it to 16:9, and publish to WordPress with the featured image attached."
+
+Claude: [Generates image with Gemini] → [Crops and converts to JPG] →
+        [Uploads to WordPress] → [Converts markdown to Gutenberg blocks] →
+        [Creates post with featured image] → Done. Here's your URL.</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>One conversation. Full pipeline. No clicking through WordPress admin panels.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">How the Tools Work</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The publishing toolkit includes:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Voice capture</strong> - Wispr Flow transcribes my dictation to text</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Content transformation</strong> - Claude Code converts raw transcription to structured markdown</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Image generation</strong> - The Nano Banana Pro plugin generates hero images using Google's Gemini model</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Image processing</strong> - A Python script crops images to 16:9 and converts to web-optimized JPG</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>WordPress publishing</strong> - Another Python script handles media uploads, post creation, and metadata via the WordPress REST API</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>File organization</strong> - Each post lives in its own dated folder with the markdown source, images, and a metadata JSON file for future edits</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The WordPress MCP server that ships with Claude Code can create posts, but it can't upload media or set featured images. So I built CLI tools to fill those gaps. Claude Code runs them as needed during the publishing conversation.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Everything in Git</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The entire setup lives in a GitHub repository. Each blog post is a folder:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>posts/
+├── 2026-01-13-ai-powered-blog-workflow/
+│   ├── content.md          # This post
+│   ├── featured.jpg        # Hero image
+│   ├── hero.png            # Original generated image
+│   └── meta.json           # WordPress post ID, dates, SEO fields</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Version control for blog posts. If I need to update something, I know exactly where to find it. The <code>meta.json</code> file stores the WordPress post ID so I can push updates to the live site.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">The Meta Part</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Here's what's happening right now:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list"><li>I dictated the concept for this post using Wispr Flow</li><li>I asked Claude Code to turn my rambling into a structured article</li><li>I reviewed and edited the markdown</li><li>I'll ask Claude to generate a hero image</li><li>Claude will crop it, upload it to WordPress, and publish</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>The workflow I'm describing is the workflow producing this description. It's turtles all the way down.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Try It Yourself</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The publishing toolkit is open source: <a href="https://github.com/mfwarren/personal-brand">github.com/mfwarren/personal-brand</a></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>You'll need:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>A WordPress site with REST API access</li><li>An application password for authentication</li><li>Claude Code with the Nano Banana Pro plugin for image generation</li><li>Wispr Flow (or any voice-to-text tool) for dictation</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Clone the repo, configure your credentials, and start talking. The gap between having an idea and publishing it has never been smaller.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:separator -->
+<hr class="wp-block-separator has-alpha-channel-opacity"/>
+<!-- /wp:separator -->
+
+<!-- wp:paragraph {"fontSize":"small"} -->
+<p class="has-small-font-size"><em>Written by dictation, edited by AI, published by CLI. The future of blogging is conversational.</em></p>
+<!-- /wp:paragraph -->
